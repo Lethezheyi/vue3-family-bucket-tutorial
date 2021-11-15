@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <style>
+        .done{
+            text-decoration: line-through;
+            color: gray;
+        }
+    </style>
+    <div id="app" data-v-app>
+        全选 <input type="checkbox" v-model='allDone'/>
+        <input type="text" v-model='title' @keydown.enter='addTodo'/>
+        <!-- <input type="button" value="test" @click='getNum'> -->
+        <ul>
+            <li v-for="todo in todos">
+                <input type="checkbox" v-model="todo.done">
+                <!--  采用大括号和v-bind语法糖形式实现数据双向绑定 -->
+                <span v-bind:class="{done:todo.done}">{{todo.title}}</span>
+            </li>
+        </ul>
+        <span>未完成项：{{active}}/{{all}}</span>
+        <input type="button" value="清理" v-if="active<all" @click="clear"/>
+        <div v-else>
+            暂无已完成数据
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/vue@next"></script>
+    <script>
+        const App = {
+            data(){
+                return {
+                    title:"哈哈", //定义一个数据
+                    todos:[{title:"吃饭",done:false},
+                    {title:"睡觉",done:true}],
+                    todoNum:0,
+                }
+            },
+            computed:{
+                active(){
+                    return this.todos.filter(v=>!v.done).length
+                },
+                all(){
+                    return this.todos.length
+                },
+                allDone:{
+                    get:function(){
+                        return this.active === 0;
+                    },
+                    set:function(val){
+                        this.todos.forEach(todo => {
+                            todo.done = val;
+                        });
+                    }
+                }
+            },
+            methods:{
+                addTodo(){
+                    this.todos.push({
+                        title:this.title,
+                        done:false
+                    });
+                    this.title = '';
+                },
+                getNum(){
+                    for(let i in this.todos){
+                        if(this.todos[i].done){
+                            this.todoNum++;
+                        }
+                    }
+                },
+                clear(){
+                    this.todos = this.todos.filter(v=>!v.done)
+                }
+            }
+        }
+        Vue.createApp(App).mount('#app')
+    </script>
+</body>
+</html>
